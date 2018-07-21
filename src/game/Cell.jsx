@@ -3,7 +3,7 @@ import './Cell.css'
 
 const Cell = (props) => {
   return (
-    <btn className={`cell ${props.checked}`} onClick={() => props.onCellClick({row: props.row, col: props.col})} />
+    <input type='checkbox' className={`cell ${props.cellState}`} onClick={() => props.onCellClick({row: props.row, col: props.col})} />
   )
 }
 
