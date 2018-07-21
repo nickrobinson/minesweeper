@@ -1,0 +1,57 @@
+.cell {
+  display: inline-block;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 24px;
+  width: 1em;
+  height: 1em;
+  margin: 0;
+  color: transparent;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  outline: none;
+  background-image: url(/images/minesweeper_tiles.jpg);
+  background-size: 500%;
+  cursor: pointer;
+}
+
+.cell:checked {
+  pointer-events: none;
+}
+
+.cell:checked.mines-0 {
+  background-position: -400% -100%;
+}
+
+.cell:checked.mines-1 {
+  background-position: 0 -100%;
+}
+
+.cell:checked.mines-2 {
+  background-position: -100% -100%;
+}
+
+.cell:checked.mines-3 {
+  background-position: -200% -100%;
+}
+
+.cell:checked.mines-4 {
+  background-position: -300% -100%;
+}
+
+.cell:checked.mines-5 {
+  background-position: 0 -200%;
+}
+
+.cell:checked.mines-6 {
+  background-position: -100% -200%;
+}
+
+.cell:checked.mines-7 {
+  background-position: -200% -200%;
+}
+
+.cell:checked.mines-8 {
+  background-position: -200% -300%;
+}

@@ -1,0 +1,10 @@
+.board {
+  background: #c0c0c0;
+  border: 4px solid black;
+  border-bottom-color: #fff;
+  border-right-color: #fff;
+  border-left-color: #808080;
+  border-top-color: #808080;
+  font-size: 0;
+}
+
