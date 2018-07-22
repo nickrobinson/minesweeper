@@ -63,3 +63,7 @@
 .cell:checked.mine {
   background-position: -200% 0px;
 }
+
+.cell:checked.flag {
+  background-position: -100% 0;
+}
