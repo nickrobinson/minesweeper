@@ -5,53 +5,25 @@ import Cell from './Cell'
 import Scoreboard from './Scoreboard'
 import GameWinAlert from './GameWinAlert'
 import GameLostAlert from './GameLostAlert'
+import CheatButton from './CheatButton'
 
-import { Object } from 'core-js'
-
-const CELL_STATES = Object.freeze({
-  ZERO_MINES: 'checked mines-0',
-  ONE_MINE: 'checked mines-1',
-  TWO_MINES: 'checked mines-2',
-  THREE_MINES: 'checked mines-3',
-  FOUR_MINES: 'checked mines-4',
-  FIVE_MINES: 'checked mines-5',
-  SIX_MINES: 'checked mines-6',
-  SEVEN_MINES: 'checked mines-7',
-  EIGHT_MINES: 'checked mines-8',
-  DEAD: 'mine',
-  FLAG: 'flag',
-  DEFAULT: ''
-})
-
-const chooseIfMineCell = (p = 0.80) => {
-  const val = Math.pow(Math.random(), 2)
-  return val >= p
-}
-
-const getCellState = (mineCount) => {
-  return CELL_STATES[Object.keys(CELL_STATES)[mineCount]]
-}
-
-const generateMinePositions = (rows = 20, cols = 10) => {
-  return Array(rows).fill().map(() => Array(cols).fill().map((_) => { return chooseIfMineCell() }))
-}
-
-const generateInitialBoardState = (rows = 20, cols = 10) => {
-  return Array(rows).fill().map(() => Array(cols).fill().map(() => CELL_STATES.DEFAULT))
-}
-
-const getMineCount = (minePositions) => {
-  return minePositions.reduce((acc, val) => acc.concat(val), []).filter(v => v).length
-}
+import {
+  generateMineCells,
+  generateInitialBoardState,
+  getMineCount,
+  getCellState,
+  CELL_STATES,
+  DEFAULT_COL_COUNT,
+  DEFAULT_ROW_COUNT} from '../../lib/GameHelper'
 
 class Board extends Component {
   initBoard () {
-    const minePositions = generateMinePositions()
+    const minePositions = generateMineCells()
     const boardState = generateInitialBoardState()
     if (this.state) {
-      this.setState({remainingMines: getMineCount(minePositions), dead: false, rows: 10, cols: 20, boardState, minePositions})
+      this.setState({remainingMines: getMineCount(minePositions), dead: false, rows: DEFAULT_COL_COUNT, cols: DEFAULT_ROW_COUNT, boardState, minePositions})
     } else {
-      this.state = {remainingMines: getMineCount(minePositions), dead: false, rows: 10, cols: 20, boardState, minePositions}
+      this.state = {remainingMines: getMineCount(minePositions), dead: false, rows: DEFAULT_COL_COUNT, cols: DEFAULT_ROW_COUNT, boardState, minePositions}
     }
   }
 
@@ -60,6 +32,7 @@ class Board extends Component {
     this.initBoard()
 
     this.onCellClick = this.onCellClick.bind(this)
+    this.onCheat = this.onCheat.bind(this)
     this.getAdjacentMineCount = this.getAdjacentMineCount.bind(this)
     this.calcNewBoardState = this.calcNewBoardState.bind(this)
     this.placeFlag = this.placeFlag.bind(this)
@@ -104,6 +77,10 @@ class Board extends Component {
     }
 
     return false
+  }
+
+  onCheat () {
+    console.log('CHEATER')
   }
 
   onCellClick (event) {
@@ -159,14 +136,18 @@ class Board extends Component {
   render () {
     return (
       <div>
-        <br />
-        {this.state.remainingMines === 0 ? <GameWinAlert /> : null}
-        {this.state.dead ? <GameLostAlert onCreateNewGame={this.initBoard} /> : null}
-        <br />
-        <Scoreboard mineCount={this.state.remainingMines} />
-        <div className='board' style={{width: `250px`}}>
-          {Array(this.state.cols).fill()
+        <div>
+          {this.state.remainingMines === 0 ? <GameWinAlert onCreateNewGame={this.initBoard} /> : null}
+          {this.state.dead ? <GameLostAlert onCreateNewGame={this.initBoard} /> : null}
+          <br />
+        </div>
+        {this.state.dead ? null : <CheatButton onClick={this.onCheat} />}
+        <div>
+          <Scoreboard mineCount={this.state.remainingMines} />
+          <div className='board' style={{ justifyContent: 'center', width: `200px`}}>
+            {Array(this.state.cols).fill()
           .map((_, i) => Array(this.state.rows).fill().map((_, j) => <Cell disabled={this.state.dead} onContextMenu={this.placeFlag} onCellClick={this.onCellClick} cellState={this.state.boardState[i][j]} col={j} row={i} />))}
+          </div>
         </div>
       </div>
 
