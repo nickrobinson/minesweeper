@@ -55,3 +55,11 @@
 .cell:checked.mines-8 {
   background-position: -200% -300%;
 }
+
+#dead:checked ~ .cell {
+  pointer-events: none;
+}
+
+.cell:checked.mine {
+  background-position: -200% 0px;
+}
