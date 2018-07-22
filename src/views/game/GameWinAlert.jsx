@@ -3,7 +3,7 @@ import { Alert } from 'antd'
 
 const GameWinAlert = () => {
   return (
-    <Alert type='success' hidden closable message='Congratulations. You Won!!!' />
+    <Alert type='success' hidden closable message='Congratulations!!!' />
   )
 }
 

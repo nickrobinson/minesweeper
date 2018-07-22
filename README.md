@@ -3,7 +3,7 @@
 </p>
 
 # Minesweeper Game
-My stab at creating a minesweeper game in React
+My stab at creating a minesweeper game in React. This game works very similar to the XP version that everyone knows and loves. Left-click to check if a mine is located in the selected square. Right-click to place a flag marking the cell as having a potential mine.
 
 [Demo](http://mynesweeper.s3-website-us-east-1.amazonaws.com/)
 
