@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import './Board.css'
 
 import Cell from './Cell'
+import Scoreboard from './Scoreboard'
+
 import { Object } from 'core-js'
 
 const CELL_STATES = Object.freeze({
@@ -44,7 +46,6 @@ class Board extends Component {
   calcNewBoardState (row, col) {
     let tempBoardState = this.state.boardState
     const updateBoard = (nextRow, nextCol) => {
-      console.log(nextRow, nextCol)
       const mineCount = this.getAdjacentMineCount(nextRow, nextCol)
       if (mineCount === 0 && tempBoardState[nextRow][nextCol] === CELL_STATES.DEFAULT) {
         tempBoardState[nextRow][nextCol] = CELL_STATES.ZERO_MINES
@@ -125,10 +126,14 @@ class Board extends Component {
 
   render () {
     return (
-      <div className='board' style={{width: `240px`}}>
-        {Array(this.state.cols).fill()
+      <div>
+        <Scoreboard />
+        <div className='board' style={{width: `250px`}}>
+          {Array(this.state.cols).fill()
           .map((_, i) => Array(this.state.rows).fill().map((_, j) => <Cell onContextMenu={this.placeFlag} onCellClick={this.onCellClick} cellState={this.state.boardState[i][j]} col={j} row={i} />))}
+        </div>
       </div>
+
     )
   }
 }
