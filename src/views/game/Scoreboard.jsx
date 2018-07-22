@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Scoreboard = () => {
+const Scoreboard = (props) => {
   return (
     <div>
-     Mines Left: {1}
+     Mines Left: {props.mineCount}
     </div>
   )
 }

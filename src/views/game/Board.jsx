@@ -3,6 +3,8 @@ import './Board.css'
 
 import Cell from './Cell'
 import Scoreboard from './Scoreboard'
+import GameWinAlert from './GameWinAlert'
+import GameLostAlert from './GameLostAlert'
 
 import { Object } from 'core-js'
 
@@ -35,7 +37,7 @@ class Board extends Component {
     super(props)
     const minePositions = Array(20).fill().map(() => Array(10).fill().map((_) => { return chooseIfMineCell() }))
     const boardState = Array(20).fill().map(() => Array(10).fill().map(() => CELL_STATES.DEFAULT))
-    this.state = {dead: false, rows: 10, cols: 20, boardState, minePositions}
+    this.state = {remainingMines: minePositions.reduce((acc, val) => acc.concat(val), []).filter(v => v).length, dead: false, rows: 10, cols: 20, boardState, minePositions}
 
     this.onCellClick = this.onCellClick.bind(this)
     this.getAdjacentMineCount = this.getAdjacentMineCount.bind(this)
@@ -70,7 +72,7 @@ class Board extends Component {
     event.e.preventDefault()
     const boardState = this.calcNewBoardState(event.row, event.col)
     boardState[event.row][event.col] = CELL_STATES.FLAG
-    this.setState({boardState})
+    this.setState({boardState, remainingMines: (this.state.remainingMines - 1)})
     return false
   }
 
@@ -127,7 +129,9 @@ class Board extends Component {
   render () {
     return (
       <div>
-        <Scoreboard />
+        {this.state.remainingMines === 0 ? <GameWinAlert /> : null}
+        {this.state.dead ? <GameLostAlert /> : null}
+        <Scoreboard mineCount={this.state.remainingMines} />
         <div className='board' style={{width: `250px`}}>
           {Array(this.state.cols).fill()
           .map((_, i) => Array(this.state.rows).fill().map((_, j) => <Cell onContextMenu={this.placeFlag} onCellClick={this.onCellClick} cellState={this.state.boardState[i][j]} col={j} row={i} />))}
