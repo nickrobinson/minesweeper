@@ -32,17 +32,38 @@ const getCellState = (mineCount) => {
   return CELL_STATES[Object.keys(CELL_STATES)[mineCount]]
 }
 
+const generateMinePositions = (rows = 20, cols = 10) => {
+  return Array(rows).fill().map(() => Array(cols).fill().map((_) => { return chooseIfMineCell() }))
+}
+
+const generateInitialBoardState = (rows = 20, cols = 10) => {
+  return Array(rows).fill().map(() => Array(cols).fill().map(() => CELL_STATES.DEFAULT))
+}
+
+const getMineCount = (minePositions) => {
+  return minePositions.reduce((acc, val) => acc.concat(val), []).filter(v => v).length
+}
+
 class Board extends Component {
+  initBoard () {
+    const minePositions = generateMinePositions()
+    const boardState = generateInitialBoardState()
+    if (this.state) {
+      this.setState({remainingMines: getMineCount(minePositions), dead: false, rows: 10, cols: 20, boardState, minePositions})
+    } else {
+      this.state = {remainingMines: getMineCount(minePositions), dead: false, rows: 10, cols: 20, boardState, minePositions}
+    }
+  }
+
   constructor (props) {
     super(props)
-    const minePositions = Array(20).fill().map(() => Array(10).fill().map((_) => { return chooseIfMineCell() }))
-    const boardState = Array(20).fill().map(() => Array(10).fill().map(() => CELL_STATES.DEFAULT))
-    this.state = {remainingMines: minePositions.reduce((acc, val) => acc.concat(val), []).filter(v => v).length, dead: false, rows: 10, cols: 20, boardState, minePositions}
+    this.initBoard()
 
     this.onCellClick = this.onCellClick.bind(this)
     this.getAdjacentMineCount = this.getAdjacentMineCount.bind(this)
     this.calcNewBoardState = this.calcNewBoardState.bind(this)
     this.placeFlag = this.placeFlag.bind(this)
+    this.initBoard = this.initBoard.bind(this)
   }
 
   calcNewBoardState (row, col) {
@@ -70,9 +91,18 @@ class Board extends Component {
 
   placeFlag (event) {
     event.e.preventDefault()
-    const boardState = this.calcNewBoardState(event.row, event.col)
-    boardState[event.row][event.col] = CELL_STATES.FLAG
-    this.setState({boardState, remainingMines: (this.state.remainingMines - 1)})
+
+    if (!this.state.minePositions[event.row][event.col]) {
+      this.setState({dead: true})
+      const boardState = this.calcNewBoardState(event.row, event.col)
+      boardState[event.row][event.col] = CELL_STATES.DEAD
+      this.setState(boardState)
+    } else {
+      const boardState = this.calcNewBoardState(event.row, event.col)
+      boardState[event.row][event.col] = CELL_STATES.FLAG
+      this.setState({boardState, remainingMines: (this.state.remainingMines - 1)})
+    }
+
     return false
   }
 
@@ -129,12 +159,14 @@ class Board extends Component {
   render () {
     return (
       <div>
+        <br />
         {this.state.remainingMines === 0 ? <GameWinAlert /> : null}
-        {this.state.dead ? <GameLostAlert /> : null}
+        {this.state.dead ? <GameLostAlert onCreateNewGame={this.initBoard} /> : null}
+        <br />
         <Scoreboard mineCount={this.state.remainingMines} />
         <div className='board' style={{width: `250px`}}>
           {Array(this.state.cols).fill()
-          .map((_, i) => Array(this.state.rows).fill().map((_, j) => <Cell onContextMenu={this.placeFlag} onCellClick={this.onCellClick} cellState={this.state.boardState[i][j]} col={j} row={i} />))}
+          .map((_, i) => Array(this.state.rows).fill().map((_, j) => <Cell disabled={this.state.dead} onContextMenu={this.placeFlag} onCellClick={this.onCellClick} cellState={this.state.boardState[i][j]} col={j} row={i} />))}
         </div>
       </div>
 

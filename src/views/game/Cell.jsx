@@ -7,7 +7,7 @@ const isChecked = (state) => {
 
 const Cell = (props) => {
   return (
-    <input type='checkbox' checked={isChecked(props.cellState)}
+    <input disabled={props.disabled} type='checkbox' checked={isChecked(props.cellState)}
       className={`cell ${props.cellState}`}
       onContextMenu={(e) => props.onContextMenu({e: e, row: props.row, col: props.col})}
       onClick={() => props.onCellClick({row: props.row, col: props.col})} />

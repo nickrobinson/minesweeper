@@ -1,9 +1,18 @@
 import React from 'react'
-import { Alert } from 'antd'
+import { Alert, Button, Row, Col } from 'antd'
 
-const GameLostAlert = () => {
+const GameLostAlert = (props) => {
   return (
-    <Alert type='error' hidden message='Game over. Better luck next time.' />
+    <div>
+      <Row>
+        <Col><Alert type='error' hidden message='Game over. Better luck next time.' /></Col>
+      </Row>
+      <br />
+      <Row>
+        <Col span={8} />
+        <Col span={8}><Button onClick={props.onCreateNewGame} type='primary'>New Game</Button></Col>
+      </Row>
+    </div>
   )
 }
 
