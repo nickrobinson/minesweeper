@@ -10,20 +10,21 @@ import CheatButton from './CheatButton'
 import {
   generateMineCells,
   generateInitialBoardState,
-  getMineCount,
   getCellState,
   CELL_STATES,
   DEFAULT_COL_COUNT,
   DEFAULT_ROW_COUNT} from '../../lib/GameHelper'
+
+const _ = require('lodash')
 
 class Board extends Component {
   initBoard () {
     const minePositions = generateMineCells()
     const boardState = generateInitialBoardState()
     if (this.state) {
-      this.setState({remainingMines: getMineCount(minePositions), dead: false, rows: DEFAULT_COL_COUNT, cols: DEFAULT_ROW_COUNT, boardState, minePositions})
+      this.setState({remainingMines: minePositions.length, dead: false, rows: DEFAULT_COL_COUNT, cols: DEFAULT_ROW_COUNT, boardState, minePositions})
     } else {
-      this.state = {remainingMines: getMineCount(minePositions), dead: false, rows: DEFAULT_COL_COUNT, cols: DEFAULT_ROW_COUNT, boardState, minePositions}
+      this.state = {remainingMines: minePositions.length, dead: false, rows: DEFAULT_COL_COUNT, cols: DEFAULT_ROW_COUNT, boardState, minePositions}
     }
   }
 
@@ -37,6 +38,13 @@ class Board extends Component {
     this.calcNewBoardState = this.calcNewBoardState.bind(this)
     this.placeFlag = this.placeFlag.bind(this)
     this.initBoard = this.initBoard.bind(this)
+    this.cellContainsMine = this.cellContainsMine.bind(this)
+  }
+
+  cellContainsMine (row, col) {
+    console.log(row, col)
+    console.log(_.findIndex(this.state.minePositions, (x) => { return x[0] === row && x[1] === col }))
+    return (_.findIndex(this.state.minePositions, (x) => { return x[0] === row && x[1] === col }) > -1)
   }
 
   calcNewBoardState (row, col) {
@@ -65,7 +73,7 @@ class Board extends Component {
   placeFlag (event) {
     event.e.preventDefault()
 
-    if (!this.state.minePositions[event.row][event.col]) {
+    if (!this.cellContainsMine(event.row, event.col)) {
       this.setState({dead: true})
       const boardState = this.calcNewBoardState(event.row, event.col)
       boardState[event.row][event.col] = CELL_STATES.DEAD
@@ -80,13 +88,21 @@ class Board extends Component {
   }
 
   onCheat () {
-    console.log('CHEATER')
+    const boardState = this.state.boardState
+    for (let i = 0; i < this.state.minePositions.length; i++) {
+      const cell = this.state.minePositions[i]
+      if (this.state.boardState[cell[0]][cell[1]] === CELL_STATES.DEFAULT) {
+        boardState[cell[0]][cell[1]] = CELL_STATES.FLAG
+        this.setState({boardState, remainingMines: (this.state.remainingMines - 1)})
+        break
+      }
+    }
   }
 
   onCellClick (event) {
     const boardState = this.calcNewBoardState(event.row, event.col)
 
-    if (this.state.minePositions[event.row][event.col]) {
+    if (this.cellContainsMine(event.row, event.col)) {
       boardState[event.row][event.col] = CELL_STATES.DEAD
       this.setState({dead: true})
     }
@@ -99,34 +115,30 @@ class Board extends Component {
   getAdjacentMineCount (row, col) {
     let adjacentMineCount = 0
 
-    if (this.state.minePositions[row + 1]) {
-      if (this.state.minePositions[row + 1][col]) {
-        adjacentMineCount += 1
-      }
-      if (this.state.minePositions[row + 1][col + 1]) {
-        adjacentMineCount += 1
-      }
-      if (this.state.minePositions[row + 1][col - 1]) {
-        adjacentMineCount += 1
-      }
-    }
-
-    if (this.state.minePositions[row - 1]) {
-      if (this.state.minePositions[row - 1][col]) {
-        adjacentMineCount += 1
-      }
-      if (this.state.minePositions[row - 1][col + 1]) {
-        adjacentMineCount += 1
-      }
-      if (this.state.minePositions[row - 1][col - 1]) {
-        adjacentMineCount += 1
-      }
-    }
-
-    if (this.state.minePositions[row][col - 1]) {
+    if (this.cellContainsMine(row + 1, col)) {
       adjacentMineCount += 1
     }
-    if (this.state.minePositions[row][col + 1]) {
+    if (this.cellContainsMine(row + 1, col + 1)) {
+      adjacentMineCount += 1
+    }
+    if (this.cellContainsMine(row + 1, col - 1)) {
+      adjacentMineCount += 1
+    }
+
+    if (this.cellContainsMine(row - 1, col)) {
+      adjacentMineCount += 1
+    }
+    if (this.cellContainsMine(row - 1, col + 1)) {
+      adjacentMineCount += 1
+    }
+    if (this.cellContainsMine(row - 1, col - 1)) {
+      adjacentMineCount += 1
+    }
+
+    if (this.cellContainsMine(row, col - 1)) {
+      adjacentMineCount += 1
+    }
+    if (this.cellContainsMine(row, col + 1)) {
       adjacentMineCount += 1
     }
 

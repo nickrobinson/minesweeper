@@ -27,18 +27,11 @@ export const generateMineCells = (mineCount = 10, rows = DEFAULT_ROW_COUNT, cols
     let row = Math.floor(Math.random() * (cols))
 
     if (_.findIndex(minePositions, (x) => { return x[0] === row && x[1] === col }) === -1) {
-      console.log([row, col])
       minePositions = minePositions.concat([[row, col]])
     }
   }
 
-  let mineCells = Array(rows).fill().map(() => Array(cols).fill().map((_) => { return false }))
-
-  for (let i = 0; i < minePositions.length; i++) {
-    mineCells[minePositions[i][0]][minePositions[i][1]] = true
-  }
-
-  return mineCells
+  return minePositions
 }
 
 export const getCellState = (mineCount) => {
@@ -47,8 +40,4 @@ export const getCellState = (mineCount) => {
 
 export const generateInitialBoardState = (rows = DEFAULT_ROW_COUNT, cols = DEFAULT_COL_COUNT) => {
   return Array(rows).fill().map(() => Array(cols).fill().map(() => CELL_STATES.DEFAULT))
-}
-
-export const getMineCount = (minePositions) => {
-  return minePositions.reduce((acc, val) => acc.concat(val), []).filter(v => v).length
 }
